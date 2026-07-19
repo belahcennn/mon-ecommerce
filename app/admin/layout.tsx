@@ -14,7 +14,6 @@ export default function AdminLayout({
           E-SHOP ADMIN
         </h1>
 
-
         <nav className="flex flex-col gap-4">
 
           <Link href="/admin">
@@ -41,11 +40,9 @@ export default function AdminLayout({
 
       </aside>
 
-
       <main className="flex-1 bg-gray-100 p-8">
         {children}
       </main>
-
 
     </div>
   );

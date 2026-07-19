@@ -1,169 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useCartStore } from "@/store/cartStore";
 
-
-export default function PaymentSuccessPage() {
-
-
-  const clearCart = useCartStore(
-    (state) => state.clearCart
+export default function SuccessPage() {
+  const [orderNumber] = useState(() =>
+    Math.floor(100000 + Math.random() * 900000)
   );
-
-
-  const [message, setMessage] = useState(
-    "Confirmation du paiement..."
-  );
-
 
   useEffect(() => {
-
-
-    async function confirmPayment() {
-
-
-      const params = new URLSearchParams(
-        window.location.search
-      );
-
-
-      const session_id =
-        params.get("session_id");
-
-
-
-      if(!session_id){
-
-        setMessage(
-          "Session Stripe introuvable"
-        );
-
-        return;
-
-      }
-
-
-
-
-      const res = await fetch(
-        "/api/payment-success",
-        {
-
-          method:"POST",
-
-          headers:{
-            "Content-Type":"application/json",
-          },
-
-
-          body:JSON.stringify({
-
-            session_id,
-
-          }),
-
-        }
-      );
-
-
-
-      const data = await res.json();
-
-
-
-
-      if(res.ok){
-
-
-        setMessage(
-          "Votre commande a été enregistrée avec succès."
-        );
-
-
-        clearCart();
-
-
-      }
-
-      else {
-
-
-        setMessage(
-          data.message ||
-          "Erreur lors de la validation du paiement"
-        );
-
-
-      }
-
-
-    }
-
-
-
-    confirmPayment();
-
-
-
-  }, [clearCart]);
-
-
-
-
-
+    // Vide le panier une seule fois à l'ouverture de la page
+    localStorage.removeItem("cart");
+  }, []);
 
   return (
-
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-
-
-      <div className="bg-white p-10 rounded-xl shadow text-center">
-
-
-        <div className="text-6xl mb-5">
-          ✅
-        </div>
-
-
-
-        <h1 className="text-3xl font-bold text-green-600 mb-4">
-
-          Paiement réussi !
-
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+        <h1 className="text-4xl font-bold text-green-600">
+          Commande réussie 🎉
         </h1>
 
-
-
-        <p className="text-gray-600 mb-8">
-
-          {message}
-
+        <p className="mt-4 text-lg text-gray-700">
+          Merci pour votre achat.
         </p>
 
+        <p className="mt-3 text-gray-700">
+          Votre numéro de commande est :
+        </p>
 
+        <p className="mt-2 text-2xl font-bold text-blue-600">
+          #{orderNumber}
+        </p>
 
-
-        <Link
-
-          href="/"
-
-          className="bg-orange-500 text-white px-6 py-3 rounded-lg"
-
-        >
-
-          Retour à l'accueil
-
-        </Link>
-
-
-
+        <p className="mt-6 text-sm text-gray-500">
+          Vous recevrez bientôt une confirmation de votre commande.
+        </p>
       </div>
-
-
-    </div>
-
+    </main>
   );
-
 }

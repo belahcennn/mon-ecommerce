@@ -15,7 +15,7 @@ export default function Newsletter() {
         />
 
         <button className="mt-5 bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold">
-          S'abonner
+          S&apos;abonner
         </button>
 
       </div>

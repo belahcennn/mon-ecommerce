@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 
+type Review = {
+  user: string;
+  comment: string;
+  rating: number;
+};
+
 type ReviewFormProps = {
-  addReview: (review: {
-    user: string;
-    comment: string;
-    rating: number;
-  }) => void;
+  addReview: (review: Review) => void;
 };
 
 export default function ReviewForm({
@@ -17,14 +19,21 @@ export default function ReviewForm({
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault();
 
-    if (!user || !comment) return;
+    const cleanUser = user.trim();
+    const cleanComment = comment.trim();
+
+    if (!cleanUser || !cleanComment) {
+      return;
+    }
 
     addReview({
-      user,
-      comment,
+      user: cleanUser,
+      comment: cleanComment,
       rating,
     });
 
@@ -47,6 +56,7 @@ export default function ReviewForm({
         placeholder="Votre nom"
         value={user}
         onChange={(e) => setUser(e.target.value)}
+        maxLength={50}
         className="w-full border rounded-lg p-3"
       />
 
@@ -54,8 +64,9 @@ export default function ReviewForm({
         placeholder="Votre commentaire"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        className="w-full border rounded-lg p-3"
+        maxLength={500}
         rows={4}
+        className="w-full border rounded-lg p-3"
       />
 
       <div>
@@ -82,7 +93,7 @@ export default function ReviewForm({
         type="submit"
         className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
       >
-        Envoyer l'avis
+        Envoyer l&apos;avis
       </button>
     </form>
   );
