@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  orders    Order[]
+  reviews   Review[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+
+  products Product[]
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  image       String
+  stock       Int
+  createdAt   DateTime    @default(now())
+
+  categoryId  Int
+
+  category    Category    @relation(fields: [categoryId], references: [id])
+
+  orderItems  OrderItem[]
+  reviews     Review[]
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+
+  total         Float
+
+  paymentMethod String
+  paymentStatus String
+
+  name          String
+  phone         String
+  city          String
+  address       String
+
+  status        OrderStatus @default(PENDING)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id])
+
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+
+  name      String
+  quantity  Int
+  price     Float
+
+  orderId   Int
+  productId Int
+
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+
+  rating    Int
+  comment   String
+
+  createdAt DateTime @default(now())
+
+  userId    String
+  productId Int
+
+  user       User    @relation(fields: [userId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+model Coupon {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  type      String
+  value     Float
+  active    Boolean  @default(true)
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+}
