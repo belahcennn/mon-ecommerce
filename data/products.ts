@@ -1,43 +1,46 @@
 export type Product = {
   id: number;
   name: string;
+  description?: string;
   price: number;
   image: string;
-  category: string;
-  rating: number;
+  stock: number;
 };
 
 export const products: Product[] = [
   {
     id: 1,
     name: "Nike Air Max",
+    description: "Chaussures Nike Air Max confortables et modernes.",
     price: 120,
     image: "/products/nike-air.jpg",
-    category: "Chaussures",
-    rating: 4.8,
+    stock: 10,
   },
+
   {
     id: 2,
     name: "MacBook Pro",
-    price: 1999,
+    description: "Ordinateur portable Apple MacBook Pro performant.",
+    price: 1500,
     image: "/products/macbook.jpg",
-    category: "Électronique",
-    rating: 4.9,
+    stock: 5,
   },
+
   {
     id: 3,
     name: "Apple Watch",
-    price: 399,
+    description: "Montre connectée Apple avec plusieurs fonctionnalités.",
+    price: 400,
     image: "/products/watch.jpg",
-    category: "Montres",
-    rating: 4.7,
+    stock: 8,
   },
+
   {
     id: 4,
-    name: "headphone",
-    price: 349,
+    name: "Sony WH-1000XM5",
+    description: "Casque audio Sony avec réduction de bruit.",
+    price: 350,
     image: "/products/headphone.jpg",
-    category: "Audio",
-    rating: 4.9,
+    stock: 12,
   },
 ];
