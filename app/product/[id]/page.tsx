@@ -1,42 +1,93 @@
 "use client";
-import ReviewList from "@/components/reviews/ReviewList";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 
-import { products } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
+
+type Review = {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  user?: {
+    name: string | null;
+  };
+};
+
+type Product = {
+  id: number;
+  name: string;
+  description: string | null;
+  price: number;
+  image: string;
+  stock: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  reviews: Review[];
+};
 
 export default function ProductDetailsPage() {
   const params = useParams();
 
   const productId = Number(params.id);
 
-  const product = products.find(
-    (item) => item.id === productId
-  );
-
-
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-
 
   const addToCart = useCartStore(
     (state) => state.addToCart
   );
 
-
   const toggleWishlist = useWishlistStore(
     (state) => state.toggleWishlist
   );
-
 
   const isInWishlist = useWishlistStore((state) =>
     product ? state.isInWishlist(product.id) : false
   );
 
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        const response = await fetch(
+          `/api/products/${productId}`
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setProduct(data);
+        }
+      } catch (error) {
+        console.error(
+          "Erreur récupération produit:",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <main className="text-center py-20">
+        <p className="text-xl">
+          Chargement du produit...
+        </p>
+      </main>
+    );
+  }
 
   if (!product) {
     return (
@@ -46,23 +97,24 @@ export default function ProductDetailsPage() {
         </h1>
 
         <Link
-          href="/"
+          href="/products"
           className="text-orange-500"
         >
-          Retour
+          Retour aux produits
         </Link>
       </div>
     );
   }
 
-
   return (
     <main className="max-w-6xl mx-auto px-6 py-12">
 
+      {/* PRODUIT */}
+
       <div className="grid md:grid-cols-2 gap-12">
 
+        {/* IMAGE */}
 
-        {/* Image */}
         <div>
           <Image
             src={product.image}
@@ -73,43 +125,33 @@ export default function ProductDetailsPage() {
           />
         </div>
 
+        {/* INFORMATIONS */}
 
-
-        {/* Informations */}
         <div>
 
-
           <p className="text-orange-500 font-semibold">
-           {product.category.name}
+            {product.category.name}
           </p>
-
 
           <h1 className="text-4xl font-bold mt-3">
             {product.name}
           </h1>
 
-
-          <p className="text-yellow-500 text-xl mt-3">
-            ⭐ {product.rating}
-          </p>
-
-
           <p className="text-orange-500 text-3xl font-bold mt-5">
-            ${product.price}
+            {product.price.toFixed(2)} €
           </p>
-
-
 
           <p className="text-black mt-6 leading-7">
-            Découvrez notre produit premium.
-            Qualité supérieure, design moderne,
-            confortable et adapté à votre utilisation
-            quotidienne.
+            {product.description ||
+              "Découvrez notre produit premium. Qualité supérieure et design moderne."}
           </p>
 
+          <p className="text-gray-600 mt-4">
+            Stock disponible : {product.stock}
+          </p>
 
+          {/* QUANTITÉ */}
 
-          {/* Quantité */}
           <div className="flex items-center gap-5 mt-8">
 
             <button
@@ -123,15 +165,18 @@ export default function ProductDetailsPage() {
               -
             </button>
 
-
             <span className="font-bold text-xl">
               {quantity}
             </span>
 
-
             <button
               onClick={() =>
-                setQuantity(quantity + 1)
+                setQuantity(
+                  Math.min(
+                    product.stock,
+                    quantity + 1
+                  )
+                )
               }
               className="border px-4 py-2 rounded-lg"
             >
@@ -140,13 +185,12 @@ export default function ProductDetailsPage() {
 
           </div>
 
+          {/* BOUTONS */}
 
-
-          {/* Boutons */}
           <div className="flex gap-4 mt-8">
 
-
             <button
+              disabled={product.stock <= 0}
               onClick={() =>
                 addToCart({
                   id: product.id,
@@ -156,12 +200,12 @@ export default function ProductDetailsPage() {
                   quantity,
                 })
               }
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-lg font-semibold"
+              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white py-4 rounded-lg font-semibold"
             >
-              Ajouter au panier
+              {product.stock <= 0
+                ? "Rupture de stock"
+                : "Ajouter au panier"}
             </button>
-
-
 
             <button
               onClick={() =>
@@ -183,34 +227,64 @@ export default function ProductDetailsPage() {
               />
             </button>
 
-
           </div>
-
 
         </div>
 
-
       </div>
 
+      {/* AVIS CLIENTS */}
 
-      {/* Informations supplémentaires */}
       <div className="mt-16 border-t pt-8">
 
-
-        <h2 className="text-2xl font-bold">
-          Description du produit
+        <h2 className="text-3xl font-bold mb-6">
+          ⭐ Avis des clients
         </h2>
 
+        {product.reviews.length === 0 ? (
 
-        <p className="mt-4 text-black">
-          Produit disponible avec livraison rapide.
-          Garantie qualité et satisfaction client.
-        </p>
+          <p className="text-gray-600">
+            Aucun avis pour le moment.
+          </p>
 
+        ) : (
+
+          <div className="space-y-5">
+
+            {product.reviews.map((review) => (
+
+              <div
+                key={review.id}
+                className="border rounded-xl p-5 shadow-sm"
+              >
+
+                <div className="flex justify-between">
+
+                  <strong>
+                    {review.user?.name ||
+                      "Client"}
+                  </strong>
+
+                  <span className="text-yellow-500">
+                    {"⭐".repeat(review.rating)}
+                  </span>
+
+                </div>
+
+                <p className="mt-3 text-gray-700">
+                  {review.comment}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
 
       </div>
 
-<ReviewList />
     </main>
   );
 }

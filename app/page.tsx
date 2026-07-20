@@ -8,23 +8,21 @@ import Newsletter from "@/components/newsletter/Newsletter";
 export default function Home() {
   return (
     <main className="min-h-screen">
+
       <Hero />
 
+      {/* Catégories populaires */}
       <Categories />
 
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-          Produits en vedette
-        </h2>
-
-        <FeaturedProducts />
-      </section>
+      {/* Produits en vedette */}
+      <FeaturedProducts />
 
       <Promo />
 
       <Features />
 
       <Newsletter />
+
     </main>
   );
 }

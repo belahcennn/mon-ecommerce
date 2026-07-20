@@ -1,94 +1,49 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-
-// Modifier un produit
-export async function PUT(
+export async function GET(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
 
-    const body = await request.json();
-
-    const {
-      name,
-      description,
-      price,
-      image,
-      stock,
-      categoryId,
-    } = body;
-
-
-    const product = await prisma.product.update({
+    const product = await prisma.product.findUnique({
       where: {
         id: Number(id),
       },
-
-      data: {
-        name,
-        description,
-        price: Number(price),
-        image,
-        stock: Number(stock),
-        categoryId: Number(categoryId),
+      include: {
+        category: true,
+        reviews: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
+    if (!product) {
+      return NextResponse.json(
+        { message: "Produit introuvable" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(product);
-
 
   } catch (error) {
+    console.error("PRODUCT DETAIL ERROR:", error);
 
     return NextResponse.json(
-      {
-        error: "Erreur modification produit",
-      },
-      {
-        status: 500,
-      }
+      { message: "Erreur récupération produit" },
+      { status: 500 }
     );
-
   }
-}
-
-
-
-// Supprimer un produit (on l'utilisera après)
-export async function DELETE(
-  request: Request,
-  context: { params: Promise<{ id: string }> }
-) {
-
-  try {
-
-    const { id } = await context.params;
-
-
-    const product = await prisma.product.delete({
-      where:{
-        id:Number(id),
-      },
-    });
-
-
-    return NextResponse.json(product);
-
-
-  } catch(error){
-
-    return NextResponse.json(
-      {
-        error:"Erreur suppression produit",
-      },
-      {
-        status:500,
-      }
-    );
-
-  }
-
 }

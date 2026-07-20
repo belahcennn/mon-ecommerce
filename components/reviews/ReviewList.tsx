@@ -1,76 +1,70 @@
 "use client";
 
-import Rating from "./Rating";
+type Review = {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt?: string;
+  user?: {
+    name: string | null;
+  };
+};
 
+type Props = {
+  reviews: Review[];
+};
 
-const reviews = [
-  {
-    id:1,
-    name:"Ahmed",
-    comment:"Très bon produit, qualité excellente.",
-    rating:5,
-  },
-
-  {
-    id:2,
-    name:"Sara",
-    comment:"Livraison rapide et produit conforme.",
-    rating:4,
-  },
-
-  {
-    id:3,
-    name:"Youssef",
-    comment:"Je recommande ce produit.",
-    rating:5,
-  }
-];
-
-
-export default function ReviewList(){
-
+export default function ReviewList({
+  reviews,
+}: Props) {
   return (
+    <div className="mt-16 border-t pt-8">
 
-    <div className="mt-10">
-
-
-      <h2 className="text-2xl font-bold mb-6">
-        Avis clients
+      <h2 className="text-3xl font-bold mb-6">
+        ⭐ Avis des clients
       </h2>
 
+      {reviews.length === 0 ? (
 
-      <div className="space-y-5">
+        <p className="text-gray-600">
+          Aucun avis pour le moment.
+        </p>
 
+      ) : (
 
-        {reviews.map((review)=>(
-          
-          <div
-            key={review.id}
-            className="border rounded-xl p-5"
-          >
+        <div className="space-y-5">
 
-            <h3 className="font-bold">
-              {review.name}
-            </h3>
+          {reviews.map((review) => (
 
+            <div
+              key={review.id}
+              className="border rounded-xl p-5 shadow-sm"
+            >
 
-            <Rating rating={review.rating}/>
+              <div className="flex justify-between">
 
+                <strong>
+                  {review.user?.name || "Client"}
+                </strong>
 
-            <p className="mt-3 text-black">
-              {review.comment}
-            </p>
+                <span className="text-yellow-500">
+                  {"⭐".repeat(review.rating)}
+                </span>
 
+              </div>
 
-          </div>
+              <p className="mt-3 text-gray-700">
+                {review.comment}
+              </p>
 
-        ))}
+            </div>
 
+          ))}
 
-      </div>
+        </div>
 
+      )}
 
     </div>
-
   );
 }
