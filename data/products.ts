@@ -1,10 +1,17 @@
 export type Product = {
   id: number;
   name: string;
-  description?: string;
+  description?: string | null;
   price: number;
   image: string;
   stock: number;
+
+  category: {
+    id: number;
+    name: string;
+  };
+
+  rating?: number;
 };
 
 export const products: Product[] = [
@@ -15,6 +22,13 @@ export const products: Product[] = [
     price: 120,
     image: "/products/nike-air.jpg",
     stock: 10,
+
+    category: {
+      id: 1,
+      name: "Chaussures",
+    },
+
+    rating: 4.5,
   },
 
   {
@@ -24,6 +38,13 @@ export const products: Product[] = [
     price: 1500,
     image: "/products/macbook.jpg",
     stock: 5,
+
+    category: {
+      id: 2,
+      name: "Ordinateurs",
+    },
+
+    rating: 4.8,
   },
 
   {
@@ -33,6 +54,13 @@ export const products: Product[] = [
     price: 400,
     image: "/products/watch.jpg",
     stock: 8,
+
+    category: {
+      id: 3,
+      name: "Montres",
+    },
+
+    rating: 4.6,
   },
 
   {
@@ -42,5 +70,12 @@ export const products: Product[] = [
     price: 350,
     image: "/products/headphone.jpg",
     stock: 12,
+
+    category: {
+      id: 4,
+      name: "Audio",
+    },
+
+    rating: 4.7,
   },
 ];

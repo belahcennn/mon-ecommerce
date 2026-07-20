@@ -80,7 +80,7 @@ export default function ProductDetailsPage() {
 
 
           <p className="text-orange-500 font-semibold">
-            {product.category}
+           {product.category.name}
           </p>
 
 

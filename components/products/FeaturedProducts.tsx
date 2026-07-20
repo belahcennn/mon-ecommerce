@@ -138,7 +138,7 @@ export default function FeaturedProducts() {
 
         category === "Toutes" ||
 
-        product.category === category;
+       product.category.name === category
 
 
 

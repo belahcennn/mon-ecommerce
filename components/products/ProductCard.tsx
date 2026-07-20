@@ -3,23 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
-
+import { Product } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 
-type Product = {
-  id: number;
-  name: string;
-  description?: string | null;
-  price: number;
-  image: string;
-  stock: number;
 
-  category?: {
-    id: number;
-    name: string;
-  } | null;
-};
 
 type Props = {
   product: Product;
@@ -30,7 +18,7 @@ export default function ProductCard({
 }: Props) {
   const addToCart = useCartStore(
     (state) => state.addToCart
-  );
+  )
 
   const toggleWishlist = useWishlistStore(
     (state) => state.toggleWishlist
@@ -112,8 +100,13 @@ export default function ProductCard({
 
           <button
             onClick={() =>
-              toggleWishlist(product.id)
-            }
+  toggleWishlist({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+  })
+}
             className={`p-3 rounded-lg border ${
               isInWishlist
                 ? "text-red-500 border-red-500"
