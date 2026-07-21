@@ -183,7 +183,25 @@ export default function AdminUsersPage() {
                     >
                       🔄 Changer rôle
                     </button>
+<button
+  onClick={async () => {
+    await fetch(`/api/admin/users/${user.id}/role`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        role: user.role === "ADMIN" ? "USER" : "ADMIN",
+      }),
+    });
 
+    window.location.reload();
+  }}
+>
+  {user.role === "ADMIN"
+    ? "Retirer ADMIN"
+    : "Rendre ADMIN"}
+</button>
                     <button
                       onClick={() =>
                         deleteUser(user.id)
