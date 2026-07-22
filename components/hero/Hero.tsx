@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="bg-orange-500">
@@ -11,9 +13,12 @@ export default function Hero() {
           Livraison rapide • Paiement sécurisé • Meilleurs prix
         </p>
 
-        <button className="mt-10 bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100">
+        <Link
+          href="/products"
+          className="inline-block mt-10 bg-white text-orange-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+        >
           Découvrir la boutique
-        </button>
+        </Link>
 
       </div>
     </section>
